@@ -1,0 +1,24 @@
+# YDLIDAR X2 / X2L -- single channel, 115200 baud, 8 m range.
+ydlidar_ros2_driver_node:
+  ros__parameters:
+    port: /dev/ydlidar
+    frame_id: laser_frame
+    ignore_array: ""
+    baudrate: 115200
+    lidar_type: 1          # TYPE_TRIANGLE
+    device_type: 0         # YDLIDAR_TYPE_SERIAL
+    sample_rate: 3
+    abnormal_check_count: 4
+    fixed_resolution: false
+    reversion: false
+    inverted: true
+    auto_reconnect: true
+    isSingleChannel: true
+    intensity: false
+    support_motor_dtr: true
+    angle_max: 180.0
+    angle_min: -180.0
+    range_max: 8.0
+    range_min: 0.12
+    frequency: 7.0
+    invalid_range_is_inf: false

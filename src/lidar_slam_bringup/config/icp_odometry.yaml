@@ -1,0 +1,47 @@
+# ICP scan-matching odometry (laser_scan_odometry package).
+#
+# This supplies the odom -> base_link transform that slam_toolbox requires but
+# that a lidar-only platform has no encoders to provide.
+icp_odom_node:
+  ros__parameters:
+    scan_topic: /scan
+    odom_topic: /odom
+    odom_frame: odom
+    base_frame: base_link
+    publish_tf: true
+
+    min_range: 0.15
+    max_range: 10.0            # keep in step with the ydlidar_*.yaml profile
+
+    # --- Matcher ---
+    max_iterations: 40
+    max_correspondence_distance: 0.5
+    huber_delta: 0.10          # residual (m) beyond which a point is downweighted
+    damping: 1.0e-9            # Levenberg term; raise if the solve is unstable
+    max_step: 0.5              # per-iteration cap, m and rad
+    min_points: 40
+
+    # --- Match acceptance ---
+    # A match must be both close AND broad. Mean error alone is not enough: the
+    # matcher can settle confidently onto a subset of the scan and report a
+    # small residual for a badly wrong pose.
+    #
+    # Calibrated against 120 recorded X2 scans (~165 valid returns, 1.37 deg
+    # resolution). Correct matches scored: error <= 0.062, inliers >= 0.947.
+    # Deliberately wrong pairings scored: error >= 0.151, inliers <= 0.630.
+    # The inlier ratio separates the two populations far more sharply than the
+    # residual does, so it carries the decision and the error is a backstop.
+    max_mean_error: 0.12
+    min_inlier_ratio: 0.80
+
+    # Sanity limits -- a scan-to-scan step beyond these is a bad match, not
+    # motion, and is rejected rather than integrated.
+    max_translation_per_scan: 0.5
+    max_rotation_per_scan: 0.6
+    max_consecutive_failures: 5
+
+    # --- Keyframe replacement ---
+    # Tighter than they look: matching stays accurate only while the keyframe
+    # and the live scan see substantially the same surfaces.
+    keyframe_distance: 0.15
+    keyframe_angle: 0.10

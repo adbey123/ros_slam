@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>lidar_slam_bringup</name>
+  <version>1.0.0</version>
+  <description>Launch files and configuration for a two-laptop distributed SLAM
+  setup: laptop 1 carries the YDLIDAR and publishes /scan over WiFi, laptop 2 runs
+  scan-matching odometry, slam_toolbox and RViz2.</description>
+  <maintainer email="aaryaganesh15@gmail.com">Aditya Dubey</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+  <!-- Control station only. -->
+  <exec_depend>slam_toolbox</exec_depend>
+  <exec_depend>laser_scan_odometry</exec_depend>
+  <exec_depend>nav2_map_server</exec_depend>
+  <!-- Lidar laptop only: ydlidar_ros2_driver is a source build, see README. -->
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

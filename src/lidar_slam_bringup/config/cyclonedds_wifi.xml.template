@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Cyclone DDS profile for ROS2 across two laptops on WiFi.
+
+  Generated from this template by setup/make_dds_config.sh -- do not edit the
+  copy in ~/.ros/, edit this and regenerate.
+
+  Why not the defaults?  DDS discovery normally relies on IP multicast, and
+  consumer WiFi access points routinely drop, rate-limit, or fail to bridge
+  multicast between wireless clients.  The usual symptom is two machines that
+  ping each other perfectly but never see each other's topics.  Naming the peers
+  explicitly makes discovery pure unicast and sidesteps the AP entirely.
+-->
+<CycloneDDS xmlns="https://cdds.io/config"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd">
+  <Domain id="any">
+    <General>
+      <Interfaces>
+        <!-- Pin to the WiFi interface so Cyclone does not bind to docker0,
+             a virtual bridge, or a downed ethernet port. -->
+        <NetworkInterface name="@@IFACE@@" priority="default" multicast="false" />
+      </Interfaces>
+      <AllowMulticast>false</AllowMulticast>
+      <!-- Stay under the typical 1500-byte WiFi MTU; fragmenting large UDP
+           datagrams over wireless is a reliable way to lose whole messages. -->
+      <FragmentSize>1300B</FragmentSize>
+      <MaxMessageSize>8192B</MaxMessageSize>
+    </General>
+
+    <Discovery>
+      <ParticipantIndex>auto</ParticipantIndex>
+      <MaxAutoParticipantIndex>32</MaxAutoParticipantIndex>
+      <Peers>
+        <Peer address="@@LOCAL_IP@@"/>
+        <Peer address="@@PEER_IP@@"/>
+      </Peers>
+    </Discovery>
+
+    <Internal>
+      <!-- Give the writer room to buffer when WiFi throughput dips, rather
+           than blocking the lidar driver's publish call. -->
+      <Watermarks>
+        <WhcHigh>2MB</WhcHigh>
+      </Watermarks>
+      <MinimumSocketReceiveBufferSize>4MB</MinimumSocketReceiveBufferSize>
+    </Internal>
+
+    <Tracing>
+      <Verbosity>warning</Verbosity>
+      <OutputFile>@@LOGDIR@@/cyclonedds.log</OutputFile>
+    </Tracing>
+  </Domain>
+</CycloneDDS>
